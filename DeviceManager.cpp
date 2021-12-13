@@ -204,11 +204,13 @@ public:
 		size_t iNumLPUnits = (size + random) / stLPGranularity;
 		SIZE_T stSizeToAlloc = (iNumLPUnits + 1) * stLPGranularity;
 
-		BYTE* data = (BYTE*)VirtualAlloc(0, stSizeToAlloc, MEM_LARGE_PAGES | MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+//		BYTE* data = (BYTE*)VirtualAlloc(0, stSizeToAlloc, MEM_LARGE_PAGES | MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+		BYTE* data = (BYTE*)VirtualAlloc(0, stSizeToAlloc, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 		DWORD error = GetLastError();
 
-		if (error != ERROR_NO_SYSTEM_RESOURCES)
-			env->ThrowError("CPUDevice: LargePages alloc error. Insufficient system resources exist to complete the requested service.\n");
+		if (error == ERROR_NO_SYSTEM_RESOURCES)
+			env->ThrowError("CPUDevice: LargePages alloc error. Insufficient system resources exist to complete the requested service.\n \
+While allocating %d pages of %d size.\n", iNumLPUnits+1, stSizeToAlloc);
 
 		if (error != ERROR_SUCCESS)
 			env->ThrowError("CPUDevice: LargePages alloc error. GetLastError returned: %d\n", error);
@@ -251,8 +253,9 @@ public:
 		BYTE* data = (BYTE*)VirtualAlloc(0, stSizeToAlloc, MEM_LARGE_PAGES | MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 		DWORD error = GetLastError();
 
-		if (error != ERROR_NO_SYSTEM_RESOURCES)
-			env->ThrowError("CPUDevice: LargePages alloc error. Insufficient system resources exist to complete the requested service.\n");
+		if (error == ERROR_NO_SYSTEM_RESOURCES)
+			env->ThrowError("CPUDevice: LargePages alloc error. Insufficient system resources exist to complete the requested service.\n \
+While allocating %d pages of %d size.\n", iNumLPUnits+1, stSizeToAlloc);
 
 		if (error != ERROR_SUCCESS)
 			env->ThrowError("CPUDevice: LargePages alloc error. GetLastError returned: %d\n", error);
